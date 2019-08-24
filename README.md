@@ -4,6 +4,17 @@ We need some subsets of YouTube 8m dataset, mainly MVs & ads. However, they're o
 
 I finally choose ECS of huaweicloud, and storage service mounted on ECS in Asia-Singapore district to make it faster downloading original videos.
 
+## Categories
+
+- videos_ids
+    - 8m_0mdxd              8m Music video
+        - mv_ids_($id).txt  (chunk)
+        - 0mdxd.txt         (full)
+    - 8m_011s0.txt          8m Advertising
+    - 8m_018ng.txt          8m Television advertisement
+    - ads_.txt              url of [advertisement dataset](http://people.cs.pitt.edu/~kovashka/ads/#video)
+
+
 ## Crawler for Original Videos
 
 As 8m dataset doesn't contain original videos, I crawled video ids using downloadcategoryids.sh in [youtube-8m-videos-frames](https://github.com/gsssrao/youtube-8m-videos-frames), which took the whole day.
