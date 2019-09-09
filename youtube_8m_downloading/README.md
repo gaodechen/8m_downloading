@@ -1,33 +1,33 @@
 ## Note
 
-We need some subsets of YouTube 8m dataset, mainly MVs & ads. However, they're of such large scale, and it was so hard to download them.
-
-I finally choose ECS of huaweicloud, and storage service mounted on ECS in Asia-Singapore district to make it faster downloading original videos.
+We need some subsets of YouTube 8m dataset, mainly MVs & ads. With the requirement of fast downloading, we choose ECS of huaweicloud, and storage service & OBS service mounted on ECS in Asia-Singapore district to make it more efficient.
 
 ## Categories
 
-- videos_ids
-    - 8m_0mdxd              8m Music video
-        - mv_ids_($id).txt  (chunk)
-        - 0mdxd.txt         (full)
-    - 8m_011s0.txt          8m Advertising
-    - 8m_018ng.txt          8m Television advertisement
-    - ads_.txt              url of [advertisement dataset](http://people.cs.pitt.edu/~kovashka/ads/#video)
+```
+videos_ids
+    8m_0mdxd              8m Music video
+        mv_ids_id.txt     (chunk)
+        0mdxd.txt         (full)
+    8m_011s0.txt          8m Advertising
+    8m_018ng.txt          8m Television advertisement
+    ads_.txt              url of [advertisement dataset](http://people.cs.pitt.edu/~kovashka/ads/#video)
+```
 
 
-## Crawler for Original Videos
+## Crawler & Preprocess
 
 As 8m dataset doesn't contain original videos, I crawled video ids using downloadcategoryids.sh in [youtube-8m-videos-frames](https://github.com/gsssrao/youtube-8m-videos-frames), which took the whole day.
 
-Then I split it into some chunks as it's too slow to download the whole id list in one process.
+It's a waste both in time and ECS resources downloading the whole id list in one single process. To make it a multiprocess downloader, I simply applied nohup command here. Thus we need to split id list into several chunks, here we provided a list of Music videos and chunks splited.
 
-To make it a multiprocess downloader, I simply applied nohup command here. And thus we need to split id list into several chunks, here we provided a list of Music videos and chunks splited.
+After that, we apply ``multi_process_download.sh`` to generate several background processes of ``download_id_list.sh``. It's a really big promotion in speed that I don't need to worry about my ECS cost anymore.
 
-And then, just use ``multi_process_download.sh`` to generate several background processes of ``download_id_list.sh``. It's really an big improvment in speed that I don't need to worry about my ECS cost anymore ...
+
+## Usage
 
 ```
-# Usage:
-bash multi_process_download.sh
+$ bash multi_process_download.sh
 ```
 
 BTW, some unknown bugs happended when I use youtube-dl to download some videos, youtube-dl was soooooooo slow in the first two steps downloading web page, and I've fixed it by changing some arguments:
