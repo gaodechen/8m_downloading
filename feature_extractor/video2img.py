@@ -4,7 +4,7 @@ import cv2
 
 def video2frames(pathIn='',
                  pathOut='',
-                 only_output_video_info=False,
+                 display_video_info=False,
                  extract_time_points=None,
                  initial_extract_time=0,
                  end_extract_time=None,
@@ -18,9 +18,7 @@ def video2frames(pathIn='',
     fps = cap.get(cv2.CAP_PROP_FPS)
     dur = n_frames/fps
 
-    if only_output_video_info:
-        print('only output the video information (without extract frames)::::::')
-        print("Duration of the video: {} seconds".format(dur))
+    if display_video_info:
         print("Number of frames: {}".format(n_frames))
         print("Frames per second (FPS): {}".format(fps))
 
@@ -129,8 +127,3 @@ def video2frames(pathIn='',
                         cv2.imwrite(os.path.join(pathOut, "{}_{:06d}.jpg".format(output_prefix, count+1)), image, [
                                     int(cv2.IMWRITE_JPEG_QUALITY), jpg_quality])     # save frame as JPEG file
                         count = count + 1
-
-
-pathIn = 'test.mp4'
-pathOut = './img/'
-video2frames(pathIn, pathOut)
