@@ -30,6 +30,6 @@ file_list = ['audio_' + str(i) for i in audio_list] + \
 print(file_list)
 
 for file in file_list:
-	lines = open('./dataset/' + file).readlines()
+	lines = open('../dataset/' + file).readlines()
 	lines = [item.replace('\n', '') for item in lines]
-	[copyfile(src_folder + item, dst_folder) for item in lines]
+	[copyfile(src_folder + item, dst_folder + item) for item in lines]

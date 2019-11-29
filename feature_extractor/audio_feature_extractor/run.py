@@ -4,6 +4,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import utils
+from joblib import Parallel, delayed
 
 
 class AudioAnalyzer:
@@ -117,26 +118,25 @@ class AudioAnalyzer:
             features, self.frames, aggregate=aggregate)
         return sync_feature
 
+    def proc_func(self, type):
+        if type == 0:
+            self.extract_energy_features()
+        elif type == 1:
+            self.extract_melody_features()
+        elif type == 2:
+            self.extract_rhythm_features()
+        elif type == 3:
+            self.extract_timbre_features()
+
     def compute_features(self):
-        self.extract_energy_features()
-        self.extract_melody_features()
-        self.extract_rhythm_features()
-        self.extract_timbre_features()
+        Parallel(n_jobs=4, backend='threading')(
+            delayed(self.proc_func)(i) for i in range(0, 4))
 
     def analyze(self):
         if(self.features is None):
             self.compute_features()
-        all_features = np.vstack(
-            [self.timbre_features, self.melody_features, self.energy_features, self.rhythm_features])
-        self.features = np.vstack([self.sync_frames(all_features), self.sync_frames(all_features, aggregate=np.std)])
-        return self.features
-
-'''
-# start_time = time.time()
-a = AudioAnalyzer('test2.webm')
-# b = AudioAnalyzer('test.mp4')
-feature = a.analyze()
-print(feature.shape)
-# end_time = time.time()
-np.save('test.npy', feature)
-'''
+        sync_features = np.vstack(
+            [self.timbre_features, self.melody_features, self.energy_features])
+        self.features = np.vstack([self.sync_frames(
+            sync_features), self.sync_frames(sync_features, aggregate=np.std)])
+        return {'general': self.features, 'rhythm': self.rhythm_features}

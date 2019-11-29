@@ -1,8 +1,30 @@
+import pickle
+
+def check_path(path, binary):
+    try:
+        open(path, 'r' + 'b' if binary else '')
+    except FileNotFoundError:
+        open(path, 'w' + 'b' if binary else '')
+
+def save_ckpt(obj, file_path):
+    file = open(file_path, 'wb')
+    pickle.dump(obj, file)
+    file.close()
+
+def load_ckpt(file_path):
+    file = open(file_path, 'rb')
+    try:
+        obj = pickle.load(file)
+    except EOFError: 
+        return None
+    file.close()
+    return obj
+
+'''
 import tensorflow as tf
 import numpy as np
 import sys
 import os
-
 
 def int64_feature(values):
     if not isinstance(values, (tuple, list)):
@@ -66,3 +88,4 @@ if __name__ == '__main__':
         print(data)
         print(data.shape)
     sess.close()
+'''
