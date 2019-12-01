@@ -5,3 +5,6 @@
 *.webm
 *.m4a
 *.pth
+*.pyc
+*.npz
+*.ckpt
