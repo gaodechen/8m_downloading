@@ -7,5 +7,7 @@
 *.pth
 *.pyc
 *.npz
+*.npy
+*.txt
 *.ckpt
 *.json

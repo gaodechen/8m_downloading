@@ -7,22 +7,23 @@ import numpy as np
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
-sys.path.append("./shot_boundary_extractor")
+sys.path.append("./optical_flow_extractor")
 
-from shot_boundary_extractor.run import ShotBoundaryExtractor as SBE
+from optical_flow_extractor.run import OpticalFlowAnalyzer as OFA
 from utils import save_ckpt, load_ckpt, check_path, read_ckpt
 
 csv_folder = './'
 src_folder = './video_samples/'
-dst_folder = './output/shot_boundary/'
+dst_folder = './output/optical_flow/'
 ckpt_folder = './ckpt/'
+n_proc = 4
 
 
 # process single file
 def process(infile, outfile):
-    filename = outfile.split('.')[0]
-    sbe = SBE(src_folder, dst_folder, infile, filename + '.txt', filename)
-    sbe.run()
+    buf_name = outfile.split('.')[0]
+    ofa = OFA(src_folder, dst_folder, infile, buf_name + '.npy', buf_name, 5)
+    ofa.analyze()
 
 
 def proc_func(csv_path):

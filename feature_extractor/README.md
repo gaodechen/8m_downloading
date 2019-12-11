@@ -16,6 +16,7 @@ Networks](https://arxiv.org/pdf/1705.08214.pdf).
 - `process_audio.py`
 - `process_video.py`
 - `process_shot.py`
+- `process_optical.py`
 
 To adapt in your tasks, modify those as you need.
 
@@ -24,7 +25,7 @@ csv_paths = ['audio_0']                 # list of csv files
 csv_folder = './'                       # folder of csv files
 src_folder = './video_samples/'         # folder storing files listed in csv
 dst_folder = './output/audio_feature/'  # folder to save output featuers
-ckpt_path = 'audio.ckpt' a               # file to save the checkpoints
+ckpt_path = 'audio.ckpt'                # file to save the checkpoints
 n_proc = 4                              # number of multi-processes in parallel
 ```
 

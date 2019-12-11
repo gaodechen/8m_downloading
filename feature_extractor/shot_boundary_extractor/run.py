@@ -17,19 +17,8 @@ from frame_loader import FrameLoader, return_start_and_end
 from transition_network import TransitionCNN
 from snippet import getSnippet
 from utilities import normalize_frame, print_shape
+from video2img import video2frames, img2log
 
-
-def video2frames(file_path, img_folder):
-    os.makedirs(img_folder, exist_ok=True)
-    cmd = 'ffmpeg -i ' + file_path + ' -y -f image2 -r 2 ' + img_folder + '/img_%06d.jpg'
-    FNULL = open(os.devnull, 'w')
-    subprocess.Popen(cmd, stdout=FNULL, stderr=subprocess.STDOUT)
-
-
-def img2log(img_folder, log_path):
-    img_list = os.listdir(img_folder)
-    img_list = [img_folder + i for i in img_list]
-    open(log_path, 'w').write('\n'.join(img_list))
 
 
 class ShotBoundaryExtractor:
@@ -89,7 +78,7 @@ class ShotBoundaryExtractor:
     def run(self):
         start_time = time.time()
         try:
-            video2frames(self.src_folder + self.video_path, self.frame_buf_folder)
+            video2frames(self.src_folder + self.video_path, self.frame_buf_folder, self.fps)
             img2log(self.frame_buf_folder, self.frame_list_path)
         except Exception as e:
             print(e)

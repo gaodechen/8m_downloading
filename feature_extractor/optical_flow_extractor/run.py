@@ -2,11 +2,17 @@ import numpy as np
 import cv2 as cv
 import time
 import os
+from video2img import video2frames
 
 
 class OpticalFlowAnalyzer:
-    def __init__(self, img_folder):
-        self.img_folder = img_folder
+    def __init__(self, src_folder, dst_folder, video_path, feature_path, buf_name, fps=5):
+        self.src_folder = src_folder
+        self.dst_folder = dst_folder
+        self.video_path = video_path
+        self.feature_path = feature_path
+        self.frame_buf_folder = './' + buf_name + '/'
+        self.fps = fps
 
     def warp_flow(self, img, flow):
         h, w = flow.shape[:2]
@@ -22,16 +28,24 @@ class OpticalFlowAnalyzer:
         inst = cv.DISOpticalFlow.create(cv.DISOPTICAL_FLOW_PRESET_MEDIUM)
         inst.setUseSpatialPropagation(use_spatial_propagation)
 
-        img_list = os.listdir(self.img_folder)
-        img_list.sort()
+        try:
+            video2frames(self.src_folder + self.video_path, self.frame_buf_folder, self.fps)
+        except Exception as e:
+            print(e)
+            print(self.video_path + ' failed to extract frames')
+            return;
+
+        img_list = os.listdir(self.frame_buf_folder)
+        img_list = [self.frame_buf_folder + i for i in img_list]
         num = len(img_list)
-        img_list = [self.img_folder + img_list[i] for i in range(0, num)]
 
         flow = []
         current_flow = None
         try:
             img = cv.imread(img_list[0])
-        except:
+        except Exception as e:
+            print(e)
+            print(self.video_path + ' failed to read frames')
             return
         prevgray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
@@ -45,5 +59,5 @@ class OpticalFlowAnalyzer:
                 current_flow = inst.calc(prevgray, gray, None)
             prevgray = gray
             flow.append(current_flow)
-
-        return flow
+        
+        np.save(self.dst_folder + self.feature_path, np.array(flow))
