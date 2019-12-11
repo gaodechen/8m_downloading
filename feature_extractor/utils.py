@@ -1,5 +1,6 @@
 import pickle
 
+
 def check_path(path, binary):
     try:
         open(path, 'r' + 'b' if binary else '')
@@ -19,6 +20,13 @@ def load_ckpt(file_path):
         return None
     file.close()
     return obj
+
+
+def read_ckpt(ckpt_path):
+    ckpt_info = load_ckpt(ckpt_path)
+    ckpt = -1 if ckpt_info is None else int(ckpt_info)
+    return ckpt
+
 
 '''
 import tensorflow as tf

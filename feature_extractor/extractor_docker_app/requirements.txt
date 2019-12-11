@@ -1,5 +1,0 @@
-librosa
-ffmpeg-python
-joblib
-tqdm
-tensorflow

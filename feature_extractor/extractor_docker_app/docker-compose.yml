@@ -1,8 +1,0 @@
-version: '2.1'
-
-services:
-  extractor_docker_app:
-    image: extractor_docker_app
-    build: .
-    ports:
-      - 3000:3000

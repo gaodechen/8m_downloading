@@ -12,6 +12,8 @@ class VideoLoader(Dataset):
     def __init__(
             self,
             csv,
+            src_folder,
+            dst_folder,
             framerate=1,
             size=112,
             centercrop=False,
@@ -20,6 +22,8 @@ class VideoLoader(Dataset):
         Args:
         """
         self.csv = pd.read_csv(csv)
+        self.src_folder = src_folder
+        self.dst_folder = dst_folder
         self.centercrop = centercrop
         self.size = size
         self.framerate = framerate
@@ -44,8 +48,8 @@ class VideoLoader(Dataset):
             return self.size, int(w * self.size / h)
 
     def __getitem__(self, idx):
-        video_path = self.csv['video_path'].values[idx]
-        output_file = self.csv['feature_path'].values[idx]
+        video_path = self.src_folder + self.csv['video_path'].values[idx]
+        output_file = str(self.dst_folder) + self.csv['feature_path'].values[idx]
 
         if not(os.path.isfile(output_file)) and os.path.isfile(video_path):
             print('Decoding video: {}'.format(video_path))

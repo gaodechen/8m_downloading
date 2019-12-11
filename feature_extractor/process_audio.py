@@ -8,8 +8,8 @@ from tqdm import tqdm
 from audio_feature_extractor.run import AudioAnalyzer
 from utils import save_ckpt, load_ckpt, check_path
 
-csv_paths = ['audio_0']
-csv_folder = './'
+csv_paths = ['audio_' + str(i) for in range(5, 15)]
+csv_folder = './dataset/list_10k5/audio_csv/'
 src_folder = './video_samples/'
 dst_folder = './output/audio_feature/'
 ckpt_path = 'audio.ckpt'
@@ -17,10 +17,13 @@ n_proc = 4
 
 
 def proc_func(infile, outfile, csv_path, csv_index):
-    audio_analyzer = AudioAnalyzer(src_folder + infile)
-    audio_analyzer.compute_features()
-    feature = audio_analyzer.analyze()
-    np.savez(dst_folder + outfile, **feature)
+    try:
+        audio_analyzer = AudioAnalyzer(src_folder + infile)
+        audio_analyzer.compute_features()
+        feature = audio_analyzer.analyze()
+        np.savez(dst_folder + outfile, **feature)
+    except:
+        pass
 
     [csv_old, index_old] = load_ckpt(ckpt_path).split('#')
     ckpt_index = str(max(csv_index, int(index_old))
@@ -44,15 +47,22 @@ if __name__ == "__main__":
 
     print('continue from checkpoint ' + ckpt_chunk + ' ' + str(ckpt_index))
 
-    for csv_path in csv_paths:
+    start_index = 0
+
+    try:
+        start_index = csv_paths.index(ckpt_chunk)
+    except:
+        print('checkpoint not found, reset ckpt file')
+        ckpt_chunk = csv_paths[0]
+        ckpt_index = -1
+        save_ckpt(ckpt_chunk + '#' + str(ckpt_index), ckpt_path)
+        start_index = 0
+
+    for csv_path in csv_paths[start_index:]:
         print(csv_path + ' has began ...')
         csv_file = csv.reader(open(csv_folder + csv_path + '.csv'))
         _ = next(csv_file)
         rows = [row for row in csv_file]
-        '''
-        parallel between files: 87s
-        multiprocessing & threading nested: 71s
-        '''
         start_time = time.time()
         Parallel(n_jobs=n_proc, backend='multiprocessing')(delayed(proc_func)(
             rows[i][0], rows[i][1], csv_path, i) for i in tqdm(range(ckpt_index + 1, len(rows))))
